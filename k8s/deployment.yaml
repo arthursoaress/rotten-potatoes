@@ -1,19 +1,21 @@
-##Deployment do MongoDB
+
+#Deployment do MongoDB
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mongodb
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: mongodb
+      app: potatoes-mongodb
   template:
-    metadata:
+    metadata:        
       labels:
-        app: mongodb
+        app: potatoes-mongodb
     spec:
       containers:
-        - name: mongodb
+        - name: potatoes-mongodb
           image: mongo:4.4.6
           resources:
             limits:
@@ -26,36 +28,40 @@ spec:
               value: mongouser
             - name: MONGO_INITDB_ROOT_PASSWORD
               value: mongopwd
+
 ---
-#Service do mongodb
+# Service do mongodb
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongodb
+  name: potatoes-mongodb
 spec:
   selector:
-    app: mongodb
+    app: potatoes-mongodb
   ports:
-  - port: 27017
+    - port: 27017
+      protocol: TCP
   type: ClusterIP
+
 ---
-## Deployment da aplicação web
+# Deployment da Aplicação WEb
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web
+  name: potatoes-web
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: web
+      app: potatoes-web
   template:
-    metadata:
+    metadata:        
       labels:
-        app: web
+        app: potatoes-web
     spec:
       containers:
-        - name: web
-          image: lnxsoares/rotten-potatoes:v1
+        - name: potatoes-web
+          image: lnxsoares/rotten-potatoes:v2
           resources:
             limits:
               memory: "128Mi"
@@ -63,27 +69,30 @@ spec:
           ports:
             - containerPort: 5000
           env:
-            - name: MONGO_DB
-              value: "admin"
-            - name: MONGODB_HOST
-              value: "mongodb"
-            - name: MONGODB_PORT
-              value: "27017"  
-            - name: MONGO_INITDB_ROOT_USERNAME
-              value: "mongouser"
-            - name: MONGO_INITDB_ROOT_PASSWORD
-              value: "mongopwd"
+           - name: MONGODB_DB
+             value: "admin"
+           - name: MONGODB_HOST
+             value: "potatoes-mongodb"
+           - name: MONGODB_PORT
+             value: "27017"
+           - name: MONGODB_USERNAME
+             value: "mongouser"
+           - name: MONGODB_PASSWORD
+             value: "mongopwd"
+
 ---
-#Service da aplicação web
+# Service da Applicação web
 apiVersion: v1
 kind: Service
 metadata:
-  name: web
+  name: potatoes-web
 spec:
   selector:
-    app: web
+    app: potatoes-web
   ports:
     - port: 80
       targetPort: 5000
+      protocol: TCP
+      name: http
       nodePort: 30000
-  type: NodePort
+  type: LoadBalancer
