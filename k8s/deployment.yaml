@@ -61,7 +61,7 @@ spec:
     spec:
       containers:
         - name: potatoes-web
-          image: lnxsoares/rotten-potatoes:v2
+          image: lnxsoares/rotten-potatoes:8
           resources:
             limits:
               memory: "128Mi"
