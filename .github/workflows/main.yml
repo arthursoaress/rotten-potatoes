@@ -27,7 +27,7 @@ jobs:
           push: true
           tags: |
             arthursoaress/rotten-potatoes:latest
-            arthursoaress/rotten-potatoes:${{ github.run_number }}
+            arthursoaress/rotten-potatoes:${{ github.run_number}}
           
 
 
